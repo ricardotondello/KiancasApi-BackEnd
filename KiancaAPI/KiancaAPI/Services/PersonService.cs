@@ -9,7 +9,7 @@ namespace KiancaAPI.Services
     {
         private readonly IMongoCollection<Person> _persons;
 
-        public PersonService(IPersonstoreDatabaseSettings settings)
+        public PersonService(IMongoDatabaseSettings settings)
         {
             var client = new MongoClient(settings.ConnectionString);
             var database = client.GetDatabase(settings.DatabaseName);
@@ -18,7 +18,7 @@ namespace KiancaAPI.Services
         }
 
         public List<Person> Get() =>
-            _persons.Find(book => true).ToList();
+            _persons.Find(person => true).ToList();
 
         public Person Get(string id) =>
             _persons.Find<Person>(p => p.Id == id).FirstOrDefault();

@@ -30,11 +30,11 @@ namespace KiancaAPI
         public void ConfigureServices(IServiceCollection services)
         {
             // requires using Microsoft.Extensions.Options
-            services.Configure<PersonstoreDatabaseSettings>(
-                Configuration.GetSection(nameof(PersonstoreDatabaseSettings)));
+            services.Configure<MongoDatabaseSettings>(
+                Configuration.GetSection(nameof(MongoDatabaseSettings)));
 
-            services.AddSingleton<IPersonstoreDatabaseSettings>(sp =>
-                sp.GetRequiredService<IOptions<PersonstoreDatabaseSettings>>().Value);
+            services.AddSingleton<IMongoDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<MongoDatabaseSettings>>().Value);
 
             services.AddSingleton<PersonService>();
 
