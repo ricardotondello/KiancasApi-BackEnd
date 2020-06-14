@@ -1,29 +1,34 @@
 ﻿using KiancaAPI.Models;
-using KiancaAPI.Services;
+using KiancaAPI.Repository;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace KiancaAPI.Controllers
 {
+    [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController]
     public class PersonsController : Controller
     {
-        private readonly PersonService _personService;
+        //private readonly PersonService _personService;
+        private readonly IPersonRepository _repo;
 
-        public PersonsController(PersonService personService)
+        public PersonsController(IPersonRepository repo)
         {
-            _personService = personService;
+            _repo = repo;
         }
 
         [HttpGet]
-        public ActionResult<List<Person>> Get() =>
-            _personService.Get();
+        public async Task<ActionResult<List<Person>>> GetAll()
+        {
+            return new ObjectResult(await _repo.Get());
+        }
 
         [HttpGet("{id:length(24)}", Name = "GetPerson")]
-        public ActionResult<Person> Get(string id)
+        public async Task<ActionResult<Person>> Get(string id)
         {
-            var person = _personService.Get(id);
+            var person = await _repo.Get(id);
 
             if (person == null)
             {
@@ -34,39 +39,39 @@ namespace KiancaAPI.Controllers
         }
 
         [HttpPost]
-        public ActionResult<Person> Create(Person person)
+        public async Task<ActionResult<Person>> Post(Person person)
         {
-            _personService.Create(person);
+            await _repo.Create(person);
 
-            return CreatedAtRoute("GetPerson", new { id = person.Id.ToString() }, person);
+            return CreatedAtRoute("GetPerson", new { id = person.Id }, person);
         }
 
         [HttpPut("{id:length(24)}")]
-        public IActionResult Update(string id, Person personIn)
+        public async Task<IActionResult> Put(string id, Person personIn)
         {
-            var person = _personService.Get(id);
+            var person = await _repo.Get(id);
 
             if (person == null)
             {
                 return NotFound();
             }
 
-            _personService.Update(id, personIn);
+            await _repo.Update(personIn);
 
             return NoContent();
         }
 
         [HttpDelete("{id:length(24)}")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var person = _personService.Get(id);
+            var person = await _repo.Get(id);
 
             if (person == null)
             {
                 return NotFound();
             }
 
-            _personService.Remove(person.Id);
+            await _repo.Delete(person.Id);
 
             return NoContent();
         }
