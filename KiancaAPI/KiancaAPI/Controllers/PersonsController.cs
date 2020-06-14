@@ -1,5 +1,6 @@
 ﻿using KiancaAPI.Models;
 using KiancaAPI.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,7 +9,7 @@ namespace KiancaAPI.Controllers
 {
     [Produces("application/json")]
     [Route("api/[controller]")]
-    [ApiController]
+    [ApiController, Authorize]
     public class PersonsController : Controller
     {
         //private readonly PersonService _personService;

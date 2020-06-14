@@ -6,6 +6,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
+using System.IdentityModel.Tokens.Jwt;
+using IdentityServer4.AccessTokenValidation;
+using IdentityModel;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
 
 namespace KiancaAPI
 {
@@ -21,7 +28,43 @@ namespace KiancaAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            // Setting OAuth2 configuration
+            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
+            //services.AddAuthentication(o =>
+            //{
+            //    o.DefaultScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+            //    o.DefaultAuthenticateScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
+            //})
+            //    .AddIdentityServerAuthentication(options =>
+            //    {
+            //        options.Authority = "http://localhost:5000";
+            //        options.RequireHttpsMetadata = false;
+            //        options.ApiSecret = "a7393419841f94371979beb855f9526b6d78ee7370fdad9f78ec2e16096bf0d8";
+            //        options.ApiName = "kiancaapi";
+            //        options.RoleClaimType = JwtClaimTypes.Role;
+            //        options.NameClaimType = JwtClaimTypes.Name;
+            //    });
 
+            //validacao token JWT
+            services.AddAuthentication(option =>
+            {
+                option.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                option.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+            }).AddJwtBearer(options =>
+             options.TokenValidationParameters = new TokenValidationParameters
+             {
+                 ValidateIssuer = false,
+                 ValidateAudience = false,
+                 ValidateLifetime = false,
+                 ValidIssuer = Configuration["TokenConfiguration:Issuer"],
+                 ValidAudience = Configuration["TokenConfiguration:Audience"],
+                 ValidateIssuerSigningKey = true,
+                 IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Jwt:Key"]))
+             });
+            //fim validacao token JWT
+
+            //configure swagger
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo
@@ -29,6 +72,33 @@ namespace KiancaAPI
                     Version = "v1",
                     Title = "KiancaAPI",
                     Description = "Catalogo de Pessoas",
+                });
+
+                //security para testes no swagger api
+
+                c.AddSecurityDefinition(
+                  "Bearer", new OpenApiSecurityScheme
+                  {
+                      Scheme = "Bearer",
+                      In = ParameterLocation.Header,
+                      Description = "JWT Authorization header using the Bearer scheme.",
+                      Name = "Authorization",
+                      Type = SecuritySchemeType.ApiKey
+                  });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                    Reference = new OpenApiReference
+                    {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "Bearer"
+                    }
+                    },
+                    new string[] {}
+                }
                 });
             });
 
@@ -55,13 +125,15 @@ namespace KiancaAPI
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Kiancas API V1");
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Kianca API V1");
             });
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            // Adding auth and auth for api
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
