@@ -28,23 +28,6 @@ namespace KiancaAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            // Setting OAuth2 configuration
-            //JwtSecurityTokenHandler.DefaultInboundClaimTypeMap.Clear();
-            //services.AddAuthentication(o =>
-            //{
-            //    o.DefaultScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
-            //    o.DefaultAuthenticateScheme = IdentityServerAuthenticationDefaults.AuthenticationScheme;
-            //})
-            //    .AddIdentityServerAuthentication(options =>
-            //    {
-            //        options.Authority = "http://localhost:5000";
-            //        options.RequireHttpsMetadata = false;
-            //        options.ApiSecret = "a7393419841f94371979beb855f9526b6d78ee7370fdad9f78ec2e16096bf0d8";
-            //        options.ApiName = "kiancaapi";
-            //        options.RoleClaimType = JwtClaimTypes.Role;
-            //        options.NameClaimType = JwtClaimTypes.Name;
-            //    });
-
             //validacao token JWT
             services.AddAuthentication(option =>
             {
@@ -54,9 +37,9 @@ namespace KiancaAPI
             }).AddJwtBearer(options =>
              options.TokenValidationParameters = new TokenValidationParameters
              {
-                 ValidateIssuer = false,
-                 ValidateAudience = false,
-                 ValidateLifetime = false,
+                 ValidateIssuer = true,
+                 ValidateAudience = true,
+                 ValidateLifetime = true,
                  ValidIssuer = Configuration["TokenConfiguration:Issuer"],
                  ValidAudience = Configuration["TokenConfiguration:Audience"],
                  ValidateIssuerSigningKey = true,
