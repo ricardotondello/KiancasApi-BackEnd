@@ -10,12 +10,12 @@ namespace KiancaAPI.Controllers
     [Produces("application/json")]
     [Route("api/[controller]")]
     [ApiController, Authorize]
-    public class PersonsController : Controller
+    public class PersonController : Controller
     {
         //private readonly PersonService _personService;
         private readonly IPersonRepository _repo;
 
-        public PersonsController(IPersonRepository repo)
+        public PersonController(IPersonRepository repo)
         {
             _repo = repo;
         }

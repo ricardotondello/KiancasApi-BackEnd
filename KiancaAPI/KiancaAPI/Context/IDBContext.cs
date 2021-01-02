@@ -9,6 +9,6 @@ namespace KiancaAPI.Context
 {
     public interface IDBContext
     {
-        IMongoCollection<Person> Persons { get; }
+        IMongoCollection<Person> Person { get; }
     }
 }

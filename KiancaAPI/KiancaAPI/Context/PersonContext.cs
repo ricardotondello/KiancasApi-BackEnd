@@ -16,6 +16,6 @@ namespace KiancaAPI.Context
             var client = new MongoClient(config.ConnectionString);
             _db = client.GetDatabase(config.Database);
         }
-        public IMongoCollection<Person> Persons => _db.GetCollection<Person>("persons");
+        public IMongoCollection<Person> Person => _db.GetCollection<Person>("person");
     }
 }

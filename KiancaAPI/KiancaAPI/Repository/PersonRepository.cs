@@ -18,7 +18,7 @@ namespace KiancaAPI.Repository
         public async Task<IEnumerable<Person>> Get()
         {
             return await _context
-                            .Persons
+                            .Person
                             .Find(_ => true)
                             .ToListAsync();
         }
@@ -26,19 +26,19 @@ namespace KiancaAPI.Repository
         {
             FilterDefinition<Person> filter = Builders<Person>.Filter.Eq(m => m.Id, id);
             return _context
-                    .Persons
+                    .Person
                     .Find<Person>(p => p.Id == id)
                     .FirstOrDefaultAsync();
         }
         public async Task Create(Person person)
         {
-            await _context.Persons.InsertOneAsync(person);
+            await _context.Person.InsertOneAsync(person);
         }
         public async Task<bool> Update(Person person)
         {
             ReplaceOneResult updateResult =
                 await _context
-                        .Persons
+                        .Person
                         .ReplaceOneAsync(
                             filter: g => g.Id == person.Id,
                             replacement: person);
@@ -49,7 +49,7 @@ namespace KiancaAPI.Repository
         {
             FilterDefinition<Person> filter = Builders<Person>.Filter.Eq(m => m.Id, id);
             DeleteResult deleteResult = await _context
-                                                .Persons
+                                                .Person
                                               .DeleteOneAsync(filter);
             return deleteResult.IsAcknowledged
                 && deleteResult.DeletedCount > 0;
