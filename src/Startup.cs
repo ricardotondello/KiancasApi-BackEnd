@@ -1,3 +1,4 @@
+using System;
 using KiancaAPI.Context;
 using KiancaAPI.Repository;
 using Microsoft.AspNetCore.Builder;
@@ -82,6 +83,7 @@ namespace KiancaAPI
             });
 
             var config = new ServerConfig();
+            
             Configuration.Bind(config);
 
             var personContext = new PersonContext(config.MongoDB);
